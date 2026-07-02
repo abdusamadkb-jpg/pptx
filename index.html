@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AkademHub — Теория и практика связей с общественностью</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700;700i&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#171f4c;
+    --navy-2:#1c2660;
+    --navy-3:#222c6e;
+    --card-dark:#1b2560;
+    --card-dark-2:#151c47;
+    --blue:#3457e6;
+    --blue-2:#3f63f0;
+    --light-bg:#eef1fc;
+    --light-bg-2:#e2e8fb;
+    --ink:#151832;
+    --body:#3b3e57;
+    --muted:#767b96;
+    --white:#ffffff;
+    --line:#dfe3f4;
+    --shadow: 0 10px 30px -12px rgba(23,31,75,.18);
+    --ease: cubic-bezier(.22,.68,0,1);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--navy);
+    -webkit-tap-highlight-color:transparent;
+  }
+  h1,h2,h3{font-family:'PT Serif',Georgia,serif; margin:0; font-weight:700;}
+  p{margin:0;}
+
+  #deck{
+    height:100dvh;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scroll-snap-type:y mandatory;
+    scroll-behavior:smooth;
+  }
+  .slide{
+    position:relative;
+    min-height:100dvh;
+    width:100%;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:clamp(28px,6vw,64px) clamp(22px,7vw,90px);
+    padding-bottom:clamp(64px,11vh,88px);
+    overflow:hidden;
+  }
+  .slide-inner{ position:relative; z-index:2; width:100%; max-width:1180px; margin:0 auto; }
+
+  /* ---------- dark cover slides ---------- */
+  .slide.cover, .slide.closing{
+    background:var(--navy);
+    color:var(--white);
+  }
+  .blob{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.09), rgba(255,255,255,0) 70%), rgba(255,255,255,.045);
+    pointer-events:none;
+  }
+  .blob.b1{ width:min(60vw,520px); height:min(60vw,520px); top:-18%; right:-14%; }
+  .blob.b2{ width:min(46vw,360px); height:min(46vw,360px); bottom:-16%; left:-12%; background:rgba(90,110,220,.16); }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:clamp(11px,1.6vw,13px);
+    letter-spacing:.14em;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#c4cdfb;
+  }
+  .cover .eyebrow{ margin-bottom:clamp(22px,5vw,40px); }
+  .star{ width:22px; height:22px; flex:none; }
+
+  .cover h1{
+    font-size:clamp(44px,9vw,88px);
+    line-height:1.02;
+    color:var(--white);
+    margin-bottom:clamp(16px,3vw,26px);
+  }
+  .cover .subtitle{
+    font-size:clamp(17px,2.6vw,26px);
+    font-weight:400;
+    color:#cfd6fa;
+    line-height:1.45;
+    max-width:640px;
+  }
+  .rule{
+    width:64px; height:3px; background:var(--blue-2);
+    margin:clamp(24px,4vw,36px) 0;
+    border-radius:2px;
+  }
+  .credit{ font-size:clamp(13px,1.8vw,15px); color:#b9c2f2; line-height:1.9;}
+  .credit b{ color:var(--white); font-weight:700; }
+
+  /* ---------- light content slides ---------- */
+  .slide.light{ background:var(--white); }
+  .head-row{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:16px; flex-wrap:wrap;
+    margin-bottom:clamp(18px,3vw,28px);
+  }
+  .kicker{
+    font-size:clamp(11px,1.5vw,13px);
+    letter-spacing:.14em; text-transform:uppercase;
+    font-weight:700; color:var(--blue);
+  }
+  .light h2{
+    font-size:clamp(28px,4.6vw,42px);
+    color:var(--ink);
+    line-height:1.12;
+    max-width:900px;
+  }
+  .lede{
+    font-size:clamp(15px,1.9vw,17px);
+    color:var(--body);
+    line-height:1.7;
+    max-width:980px;
+  }
+  .lede + .lede{ margin-top:14px; }
+
+  /* slide 2 */
+  .s2-grid{ display:grid; grid-template-columns:1.55fr 1fr; gap:clamp(20px,4vw,40px); align-items:start; margin-top:clamp(18px,3vw,26px); }
+  .side-card{
+    background:var(--light-bg); border-radius:20px;
+    padding:clamp(20px,3vw,28px);
+    box-shadow:var(--shadow);
+  }
+  .icon-badge{
+    width:44px; height:44px; border-radius:12px;
+    background:var(--blue); display:flex; align-items:center; justify-content:center;
+    margin-bottom:14px;
+  }
+  .icon-badge svg{ width:22px; height:22px; stroke:var(--white); }
+  .side-card h3{ font-family:'Inter'; font-weight:700; font-size:17px; margin-bottom:10px; color:var(--ink);}
+  .side-card p{ font-size:14.5px; color:var(--body); line-height:1.65; }
+  .quote{
+    font-family:'PT Serif',serif; font-style:italic; font-weight:700;
+    color:var(--blue); font-size:19px; margin-top:14px; line-height:1.35;
+  }
+
+  /* slide 3 */
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(14px,2.4vw,22px); margin-top:clamp(18px,3vw,26px); }
+  .info-card{
+    background:var(--light-bg); border-radius:18px;
+    padding:clamp(18px,2.6vw,26px);
+    box-shadow:var(--shadow);
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  .info-card:active, .info-card.press{ transform:scale(.975); box-shadow:0 4px 14px -6px rgba(23,31,75,.22); }
+  .info-card .row-top{ display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .circle-ico{ width:40px; height:40px; border-radius:50%; background:var(--blue); display:flex; align-items:center; justify-content:center; flex:none;}
+  .circle-ico svg{ width:20px; height:20px; stroke:var(--white); fill:none; }
+  .info-card h3{ font-size:16.5px; font-weight:700; }
+  .info-card p{ font-size:14.5px; color:var(--body); line-height:1.6; }
+
+  .banner{
+    margin-top:clamp(16px,2.6vw,22px);
+    background:var(--navy); color:var(--white);
+    border-radius:16px; padding:clamp(16px,2.6vw,22px) clamp(18px,3vw,26px);
+    font-family:'PT Serif',serif; font-style:italic; font-size:clamp(16px,2.1vw,19px); line-height:1.4;
+  }
+  .banner b{ font-style:normal; font-weight:700; }
+
+  /* slide 4 */
+  .s4-grid{ display:grid; grid-template-columns:1.35fr 1fr; gap:clamp(24px,4vw,48px); margin-top:clamp(16px,2.6vw,24px); align-items:start; }
+  .feature-row{ display:flex; gap:16px; margin-bottom:clamp(14px,2vw,20px); }
+  .feature-row h3{ font-size:15.5px; font-weight:700; margin-bottom:6px; }
+  .feature-row p{ font-size:14px; color:var(--body); line-height:1.6; }
+  .note{ font-family:'PT Serif',serif; font-style:italic; color:var(--muted); font-size:13.5px; line-height:1.6; margin-top:8px; max-width:520px; }
+
+  .tier-label{ font-size:12.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:var(--blue); margin-bottom:12px; }
+  .tier{
+    border-radius:16px; padding:clamp(14px,2vw,20px) clamp(16px,2.4vw,22px);
+    margin-bottom:12px; cursor:pointer;
+    transition:transform .3s var(--ease), box-shadow .3s var(--ease), outline-color .3s;
+    outline:2px solid transparent; outline-offset:2px;
+  }
+  .tier h3{ font-size:16px; font-weight:700; margin-bottom:6px; }
+  .tier p{ font-size:13.5px; line-height:1.55; }
+  .tier.base{ background:var(--light-bg); color:var(--ink); }
+  .tier.base p{ color:var(--body); }
+  .tier.pro{ background:var(--light-bg-2); color:var(--ink); }
+  .tier.pro p{ color:var(--body); }
+  .tier.ent{ background:var(--card-dark); color:var(--white); }
+  .tier.ent p{ color:#c3cbf3; }
+  .tier.selected{ transform:translateX(4px); outline-color:var(--blue-2); box-shadow:var(--shadow); }
+
+  /* slide 5 */
+  .timeline{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:clamp(22px,4vw,34px) 0 clamp(18px,3vw,26px);
+    position:relative;
+  }
+  .timeline::before{
+    content:""; position:absolute; left:20px; right:20px; top:50%;
+    height:2px; background:repeating-linear-gradient(to right, var(--line) 0 8px, transparent 8px 16px);
+    transform:translateY(-50%); z-index:0;
+  }
+  .tstep{
+    width:clamp(34px,5vw,44px); height:clamp(34px,5vw,44px); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white); font-weight:700; font-size:clamp(14px,2vw,17px);
+    position:relative; z-index:1; cursor:pointer; border:none;
+    transition:transform .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .tstep:active{ transform:scale(.9); }
+  .tstep.blue{ background:var(--blue); }
+  .tstep.purple{ background:#5a3fd6; }
+  .tstep.active-step{ box-shadow:0 0 0 6px rgba(52,87,230,.22); }
+
+  .step-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(10px,1.6vw,16px); }
+  .step-card{
+    background:var(--light-bg); border-radius:16px;
+    padding:clamp(14px,1.8vw,18px) clamp(12px,1.6vw,16px);
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s;
+  }
+  .step-card h3{ font-size:14.5px; font-weight:700; margin-bottom:8px; line-height:1.3; }
+  .step-card p{ font-size:13px; color:var(--body); line-height:1.55; }
+  .step-card.glow{ background:var(--light-bg-2); transform:translateY(-4px); box-shadow:var(--shadow); }
+  .caption{ text-align:center; font-family:'PT Serif',serif; font-style:italic; color:var(--muted); font-size:13.5px; margin-top:clamp(16px,2.6vw,22px); }
+
+  /* slide 6 */
+  .s6-lede-row{ display:flex; gap:14px; align-items:flex-start; margin-top:clamp(14px,2vw,20px); }
+  .s6-lede-row .circle-ico{ margin-top:2px; }
+  .phase-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(12px,2vw,18px); margin-top:clamp(20px,3vw,28px); }
+  .phase-card{
+    background:var(--card-dark); color:var(--white); border-radius:16px;
+    padding:clamp(16px,2vw,20px);
+  }
+  .phase-card .row-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .phase-card .row-top svg{ width:20px; height:20px; stroke:var(--white); }
+  .phase-card h3{ font-size:14.5px; font-weight:700; }
+  .phase-card p{ font-size:13.5px; color:#c3cbf3; line-height:1.55; }
+  .kpi-card{
+    margin-top:clamp(14px,2vw,18px);
+    background:var(--light-bg); border-radius:16px; padding:clamp(16px,2.2vw,22px);
+  }
+  .kpi-card .tier-label{ margin-bottom:8px; }
+  .kpi-card p{ font-size:14.5px; color:var(--body); line-height:1.65; }
+
+  /* closing slide */
+  .closing .slide-inner{ text-align:center; display:flex; flex-direction:column; align-items:center; }
+  .closing .chat-ico{ width:56px; height:56px; margin-bottom:22px; }
+  .closing h2{
+    font-family:'PT Serif',serif; font-weight:700; font-size:clamp(26px,4.6vw,40px);
+    color:var(--white); line-height:1.25; max-width:760px;
+  }
+  .closing .lede{ color:#cfd6fa; margin-top:18px; max-width:640px; text-align:center; font-size:clamp(15px,2vw,17px); }
+  .closing .url{ margin-top:clamp(20px,3vw,28px); font-weight:700; font-size:15px; }
+  .closing .thanks{ font-family:'PT Serif',serif; font-style:italic; color:#aab4ec; margin-top:16px; font-size:clamp(17px,2.4vw,21px); }
+
+  /* ---------- nav chrome ---------- */
+  #progress{
+    position:fixed; top:0; left:0; height:3px; background:var(--blue-2);
+    width:0%; z-index:50; transition:width .25s var(--ease);
+  }
+  #dots{
+    position:fixed; right:clamp(10px,2vw,26px); top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:12px; z-index:50;
+  }
+  #dots button{
+    width:9px; height:9px; border-radius:50%; border:none; padding:0;
+    background:rgba(255,255,255,.35); cursor:pointer;
+    transition:all .3s var(--ease);
+  }
+  .light ~ * #dots button, body.on-light #dots button{ background:rgba(23,31,75,.22); }
+  #dots button.active{ background:var(--blue-2); transform:scale(1.35); }
+
+  #navscrim{
+    position:fixed; left:0; right:0; bottom:0; height:64px; z-index:45;
+    background:linear-gradient(to top, rgba(23,31,75,.55), rgba(23,31,75,0));
+    pointer-events:none;
+  }
+  body.on-light #navscrim{ background:linear-gradient(to top, rgba(255,255,255,.85), rgba(255,255,255,0)); }
+
+  #arrows{ position:fixed; z-index:50; right:clamp(10px,2vw,26px); bottom:clamp(16px,3vh,28px); display:flex; gap:10px; }
+  #arrows button{
+    width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(23,31,75,.55); color:#fff; backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .25s var(--ease), background .25s;
+  }
+  #arrows button:active{ transform:scale(.88); }
+  #arrows button svg{ width:18px; height:18px; stroke:#fff; }
+  body.on-light #arrows button{ background:rgba(23,31,75,.12); color:var(--ink); }
+  body.on-light #arrows button svg{ stroke:var(--ink); }
+
+  #counter{
+    position:fixed; left:clamp(14px,3vw,28px); bottom:clamp(16px,3vh,28px); z-index:50;
+    font-size:12.5px; font-weight:700; letter-spacing:.06em; color:rgba(255,255,255,.7);
+  }
+  body.on-light #counter{ color:rgba(21,24,50,.55); }
+
+  /* reveal-in animation */
+  [data-fx]{ opacity:0; transform:translateY(16px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
+  .slide.in-view [data-fx]{ opacity:1; transform:translateY(0); }
+  .slide.in-view [data-fx="1"]{ transition-delay:.05s; }
+  .slide.in-view [data-fx="2"]{ transition-delay:.14s; }
+  .slide.in-view [data-fx="3"]{ transition-delay:.22s; }
+  .slide.in-view [data-fx="4"]{ transition-delay:.3s; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition-duration:.01ms !important; animation-duration:.01ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- responsive breakpoints ---------- */
+  @media (max-width: 860px){
+    .s2-grid{ grid-template-columns:1fr; }
+    .s4-grid{ grid-template-columns:1fr; }
+    .two-col{ grid-template-columns:1fr; }
+    .phase-grid{ grid-template-columns:1fr; }
+    .step-grid{ grid-template-columns:repeat(5,1fr); }
+    #dots{ display:none; }
+  }
+  @media (max-width: 620px){
+    .step-grid{ grid-template-columns:1fr; gap:10px; }
+    .timeline{ display:none; }
+    #arrows{ bottom:14px; right:14px; }
+    #arrows button{ width:36px; height:36px; }
+    .credit{ line-height:1.8; }
+  }
+  @media (max-width: 420px){
+    .cover h1{ font-size:clamp(38px,13vw,54px); }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="navscrim"></div>
+<div id="dots"></div>
+<div id="arrows">
+  <button id="prevBtn" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
+  <button id="nextBtn" aria-label="Следующий слайд"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
+<div id="counter">01 / 07</div>
+
+<div id="deck">
+
+  <!-- SLIDE 1 -->
+  <section class="slide cover" data-theme="dark">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="slide-inner">
+      <div class="eyebrow" data-fx="1">
+        <svg class="star" viewBox="0 0 24 24" fill="#fff"><path d="M12 0l1.9 7.1L21 9l-7.1 1.9L12 18l-1.9-7.1L3 9l7.1-1.9z"/></svg>
+        Теория и практика связей с общественностью
+      </div>
+      <h1 data-fx="2">AkademHub</h1>
+      <p class="subtitle" data-fx="3">Стратегический PR-консалтинг и коммуникационная стратегия стартапа</p>
+      <div class="rule" data-fx="3"></div>
+      <div class="credit" data-fx="4">
+        <b>Косимов Абдусамад</b><br>
+        Группа РМ25<br>
+        akademhub.uz
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section class="slide light" data-theme="light">
+    <div class="slide-inner">
+      <div class="head-row">
+        <h2 data-fx="1">Проблема и контекст</h2>
+        <span class="kicker" data-fx="1">01 · Контекст</span>
+      </div>
+      <div class="s2-grid">
+        <div data-fx="2">
+          <p class="lede">Сегодня научные конференции в Узбекистане и Центральной Азии всё чаще превращаются в формальность: доклады звучат, дипломы вручаются на бумаге, но за пределами зала о них никто не узнаёт. Наука оказывается изолирована от бизнеса, государства и широкой аудитории — у исследователя нет инструмента, который превратил бы его результат в публичный, подтверждённый и узнаваемый факт. Нет системы сертификации, нет публичных профилей, нет медийного эха.</p>
+          <p class="lede">Важно понимать: это не техническая недоработка отдельных организаторов, а системная PR-проблема. Отсутствие признания и публичности — это провал коммуникации между наукой и обществом, и решать его нужно инструментами связей с общественностью, а не только программированием.</p>
+        </div>
+        <div class="side-card" data-fx="3">
+          <div class="icon-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+          </div>
+          <h3>Личная история</h3>
+          <p>Основатель дважды побеждал на конференциях — занимал 1-е и 2-е место — но так и не получил сертификат, подтверждающий эти достижения. Этот опыт стал точкой запуска проекта.</p>
+          <p class="quote">«Если критикуешь — предлагай»</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 -->
+  <section class="slide light" data-theme="light">
+    <div class="slide-inner">
+      <div class="head-row">
+        <h2 data-fx="1">Позиционирование и PR-стратегия</h2>
+        <span class="kicker" data-fx="1">02 · Стратегия</span>
+      </div>
+      <p class="lede" data-fx="2">AkademHub позиционируется не как ещё один сайт для афиш конференций, а как PR-инфраструктура для науки — платформа, которая делает достижения исследователей видимыми, подтверждёнными и обсуждаемыми.</p>
+      <div class="two-col" data-fx="3">
+        <div class="info-card" tabindex="0">
+          <div class="row-top">
+            <div class="circle-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-6-6 18-3-8-9-4z"/></svg></div>
+            <h3>Как PR-специалист</h3>
+          </div>
+          <p>Выстраивает репутацию вузов и учёных, формирует медийную повестку вокруг науки региона, управляет тем, как о конференциях и открытиях говорят в СМИ.</p>
+        </div>
+        <div class="info-card" tabindex="0">
+          <div class="row-top">
+            <div class="circle-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3-6 7-6s7 2.7 7 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c2.9.3 5 2.3 5 5.8"/></svg></div>
+            <h3>Как маркетолог</h3>
+          </div>
+          <p>Определяет целевые аудитории (студенты, вузы, бизнес, государство, СМИ), выбирает каналы для каждой из них и выстраивает воронку — от знакомства до активного участия.</p>
+        </div>
+      </div>
+      <div class="banner" data-fx="4"><b>Ключевой нарратив:</b> «Мы делаем региональную науку видимой»</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 -->
+  <section class="slide light" data-theme="light">
+    <div class="slide-inner">
+      <span class="kicker" data-fx="1">03 · Центральный фактор</span>
+      <h2 style="margin-top:8px;" data-fx="1">Стратегический PR-консалтинг</h2>
+      <div class="s4-grid">
+        <div data-fx="2">
+          <div class="feature-row">
+            <div class="circle-ico" style="flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+            <div><h3>Аудит репутации вузов</h3><p>Анализ восприятия университета студентами, бизнесом и СМИ; выявление разрывов между качеством науки и её публичным образом.</p></div>
+          </div>
+          <div class="feature-row">
+            <div class="circle-ico" style="flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/></svg></div>
+            <div><h3>Коммуникационные стратегии</h3><p>Планы того, как вуз говорит о себе: тон, каналы, периодичность публикаций.</p></div>
+          </div>
+          <div class="feature-row">
+            <div class="circle-ico" style="flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-6-6 18-3-8-9-4z"/></svg></div>
+            <div><h3>Управление инфоповодами</h3><p>Цепочка «конференция → пресс-релиз → публикация в СМИ» через работу с журналистами и редакциями.</p></div>
+          </div>
+          <div class="feature-row">
+            <div class="circle-ico" style="flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg></div>
+            <div><h3>Антикризисные коммуникации</h3><p>Оперативная и грамотная реакция при негативной информационной волне вокруг вуза.</p></div>
+          </div>
+          <p class="note">Причина: у большинства вузов региона нет собственного PR-отдела. AkademHub закрывает этот пробел готовой инфраструктурой и экспертизой.</p>
+        </div>
+        <div data-fx="3">
+          <div class="tier-label">Три уровня услуг</div>
+          <div class="tier base" tabindex="0">
+            <h3>Base</h3>
+            <p>Цифровой профиль вуза, автоматическая выдача сертификатов, попадание в общий рейтинг платформы.</p>
+          </div>
+          <div class="tier pro" tabindex="0">
+            <h3>Pro</h3>
+            <p>+ Разработка коммуникационной стратегии, регулярные пресс-релизы, работа с медиа.</p>
+          </div>
+          <div class="tier ent" tabindex="0">
+            <h3>Enterprise</h3>
+            <p>+ Персональный PR-консультант, антикризисное реагирование, приоритетное продвижение в СМИ и международных базах.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5 -->
+  <section class="slide light" data-theme="light">
+    <div class="slide-inner">
+      <div class="head-row">
+        <h2 data-fx="1">Процесс PR-коммуникации — 5 этапов</h2>
+        <span class="kicker" data-fx="1">04 · Процесс</span>
+      </div>
+      <div class="timeline" data-fx="2">
+        <button class="tstep blue" data-step="1">1</button>
+        <button class="tstep purple" data-step="2">2</button>
+        <button class="tstep blue" data-step="3">3</button>
+        <button class="tstep purple" data-step="4">4</button>
+        <button class="tstep blue" data-step="5">5</button>
+      </div>
+      <div class="step-grid" data-fx="3">
+        <div class="step-card" data-step-card="1"><h3>Исследование</h3><p>Мониторинг среды, интервью, карта болевых точек аудитории.</p></div>
+        <div class="step-card" data-step-card="2"><h3>Контакт с вузами</h3><p>Персональные встречи, бесплатный пилот, без массовых рассылок.</p></div>
+        <div class="step-card" data-step-card="3"><h3>Вовлечение</h3><p>Амбассадоры-люди, AMA-сессии, личная история как точка входа.</p></div>
+        <div class="step-card" data-step-card="4"><h3>Работа со спонсорами</h3><p>Выход через PR-отделы компаний с доказательной базой и индивидуальным предложением.</p></div>
+        <div class="step-card" data-step-card="5"><h3>Удержание</h3><p>Форум, рейтинги, истории успеха — пользователи становятся адвокатами бренда.</p></div>
+      </div>
+      <p class="caption" data-fx="4">На каждом этапе принципиально важно: с кем общаемся, каким языком и через какой канал.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 6 -->
+  <section class="slide light" data-theme="light">
+    <div class="slide-inner">
+      <div class="head-row">
+        <h2 data-fx="1">PR в международной коммуникации и Action&nbsp;Plan</h2>
+        <span class="kicker" data-fx="1">05 · Масштабирование</span>
+      </div>
+      <div class="s6-lede-row" data-fx="2">
+        <div class="circle-ico" style="flex:none;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-6-3.8-9s1.3-6.4 3.8-9z"/></svg></div>
+        <p class="lede">На международном уровне AkademHub использует PR как soft power и научную дипломатию: партнёрства со Scopus и ЮНЕСКО, питчи в Nature и Times Higher Education.</p>
+      </div>
+      <div class="phase-grid" data-fx="3">
+        <div class="phase-card">
+          <div class="row-top"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><h3>Фаза 1 · 0–3 мес</h3></div>
+          <p>500 пользователей, 20 вузов, 3 публикации в СМИ.</p>
+        </div>
+        <div class="phase-card">
+          <div class="row-top"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12l3 3 7-7"/><circle cx="12" cy="12" r="9"/></svg><h3>Фаза 2 · 3–6 мес</h3></div>
+          <p>5 000 пользователей, амбассадоры, партнёрство с IT Park.</p>
+        </div>
+        <div class="phase-card">
+          <div class="row-top"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"/><path d="M4 5h13l-2.5 3.5L17 12H4"/></svg><h3>Фаза 3 · 6–12 мес</h3></div>
+          <p>20 000 пользователей, первый форум, 3 спонсора, первая выручка.</p>
+        </div>
+      </div>
+      <div class="kpi-card" data-fx="4">
+        <div class="tier-label" style="margin-bottom:6px;">KPI</div>
+        <p>Регистрации, охват в СМИ, индекс NPS, число партнёрств, упоминания в публичном пространстве — эффективность каждой фазы отслеживается по этим показателям.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7 -->
+  <section class="slide closing" data-theme="dark">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="slide-inner">
+      <svg class="chat-ico" data-fx="1" viewBox="0 0 24 24" fill="#fff"><path d="M12 3C7 3 3 6.4 3 10.5c0 2.3 1.3 4.4 3.4 5.8-.1 1-.5 2-1.2 2.9 1.4-.1 2.7-.6 3.8-1.4 1 .3 2 .5 3 .5 5 0 9-3.4 9-7.5S17 3 12 3z" opacity=".55"/><path d="M18.5 12c2.6.3 4.5 2.1 4.5 4.3 0 1.1-.5 2.1-1.4 2.9.5.6.9 1.3 1.1 2-1.1-.1-2.1-.5-2.9-1.1-.7.2-1.5.3-2.3.3" fill="none" stroke="#fff" stroke-width="0"/></svg>
+      <h2 data-fx="2">AkademHub — практическое применение теории PR</h2>
+      <p class="lede" data-fx="3">Стратегический консалтинг, коммуникация с обществом и маркетинг работают вместе, превращая региональную науку из невидимой в признанную.</p>
+      <div class="rule" data-fx="3"></div>
+      <div class="url" data-fx="4">akademhub.uz</div>
+      <div class="thanks" data-fx="4">Спасибо за внимание</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const deck = document.getElementById('deck');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const total = slides.length;
+
+  slides.forEach((s,i)=>{
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'Слайд ' + (i+1));
+    b.addEventListener('click', ()=> slides[i].scrollIntoView({behavior:'smooth'}));
+    dotsWrap.appendChild(b);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  let current = 0;
+  function setCurrent(i){
+    current = i;
+    dots.forEach((d,idx)=> d.classList.toggle('active', idx===i));
+    counter.textContent = String(i+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    document.body.classList.toggle('on-light', slides[i].dataset.theme === 'light');
+    const pct = (i/(total-1))*100;
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && e.intersectionRatio > 0.55){
+        e.target.classList.add('in-view');
+        setCurrent(slides.indexOf(e.target));
+      }
+    });
+  }, { threshold:[0,0.55,1] });
+  slides.forEach(s=> io.observe(s));
+
+  document.getElementById('prevBtn').addEventListener('click', ()=>{
+    slides[Math.max(0,current-1)].scrollIntoView({behavior:'smooth'});
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    slides[Math.min(total-1,current+1)].scrollIntoView({behavior:'smooth'});
+  });
+
+  window.addEventListener('keydown', (e)=>{
+    if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)){
+      e.preventDefault();
+      slides[Math.min(total-1,current+1)].scrollIntoView({behavior:'smooth'});
+    } else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){
+      e.preventDefault();
+      slides[Math.max(0,current-1)].scrollIntoView({behavior:'smooth'});
+    } else if(e.key==='Home'){
+      slides[0].scrollIntoView({behavior:'smooth'});
+    } else if(e.key==='End'){
+      slides[total-1].scrollIntoView({behavior:'smooth'});
+    }
+  });
+
+  // tactile press feedback for cards
+  document.querySelectorAll('.info-card, .tier, .phase-card, .side-card, .step-card').forEach(el=>{
+    el.addEventListener('touchstart', ()=> el.classList.add('press'), {passive:true});
+    el.addEventListener('touchend', ()=> setTimeout(()=>el.classList.remove('press'),120));
+  });
+
+  // tier selection toggle (visual only)
+  document.querySelectorAll('.tier').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      const group = t.parentElement.querySelectorAll('.tier');
+      const already = t.classList.contains('selected');
+      group.forEach(g=>g.classList.remove('selected'));
+      if(!already) t.classList.add('selected');
+    });
+  });
+
+  // timeline step <-> card highlight
+  document.querySelectorAll('.tstep').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const n = btn.dataset.step;
+      document.querySelectorAll('.tstep').forEach(b=>b.classList.remove('active-step'));
+      document.querySelectorAll('.step-card').forEach(c=>c.classList.remove('glow'));
+      btn.classList.add('active-step');
+      const card = document.querySelector('.step-card[data-step-card="'+n+'"]');
+      if(card) card.classList.add('glow');
+    });
+  });
+
+  setCurrent(0);
+  slides[0].classList.add('in-view');
+</script>
+</body>
+</html>
